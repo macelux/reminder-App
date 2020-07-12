@@ -13,14 +13,23 @@
 
     <!-- Plugins css -->
     <link href="assets/libs/flatpickr/flatpickr.min.css" rel="stylesheet" type="text/css" />
-
+    <!-- Footable css -->
+    <link href="assets/libs/footable/footable.core.min.css" rel="stylesheet" type="text/css" />
     <!-- Jquery Toast css -->
     <link href="assets/libs/jquery-toast/jquery.toast.min.css" rel="stylesheet" type="text/css" />
+
 
     <!-- App css -->
     <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
+
+    <!-- third party css -->
+    <link href="assets/libs/datatables/dataTables.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables/responsive.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables/buttons.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <link href="assets/libs/datatables/select.bootstrap4.css" rel="stylesheet" type="text/css" />
+    <!-- third party css end -->
 
 </head>
 
@@ -72,7 +81,7 @@
                             <a href="javascript:void(0);" class="dropdown-item notify-item active">
                                 <div class="notify-icon">
                                     <img src="assets/images/users/user-1.jpg" class="img-fluid rounded-circle" alt="" /> </div>
-                                <p class="notify-details">Cristina Pride</p>
+                                <p class="notify-details username">user</p>
                                 <p class="text-muted mb-0 user-msg">
                                     <small>Hi, How are you? What about our next meeting</small>
                                 </p>
@@ -111,9 +120,10 @@
                 <li class="dropdown notification-list">
                     <a class="nav-link dropdown-toggle nav-user mr-0 waves-effect waves-light" data-toggle="dropdown" href="#" role="button" aria-haspopup="false" aria-expanded="false">
                         <img src="assets/images/users/user-1.jpg" alt="user-image" class="rounded-circle">
-                        <span class="pro-user-name ml-1">
-                                Geneva <i class="mdi mdi-chevron-down"></i> 
-                            </span>
+                        <span class="pro-user-name ml-1 username">
+                            Geneva
+                            <i class="mdi mdi-chevron-down"></i> 
+                        </span>
                     </a>
                     <div class="dropdown-menu dropdown-menu-right profile-dropdown ">
                         <!-- item-->
@@ -142,7 +152,7 @@
                         <div class="dropdown-divider"></div>
 
                         <!-- item-->
-                        <a href="javascript:void(0);" class="dropdown-item notify-item">
+                        <a href="javascript:void(0);" id="logout" class="dropdown-item notify-item">
                             <i class="fe-log-out"></i>
                             <span>Logout</span>
                         </a>
@@ -221,7 +231,7 @@
                             </a>
                             <ul class="nav-second-level" aria-expanded="false">
                                 <li>
-                                    <a href="crm-dashboard.html">Dashboard</a>
+                                    <a href="javascript:void(0);" id="nav-customers">Customers</a>
                                 </li>
                             </ul>
                         </li>
@@ -285,6 +295,22 @@
 
     <script>
         const $ = jQuery = require('jquery');
+        const {
+            ipcRenderer
+        } = require('electron')
+
+        $(document).ready(() => {
+            const settings = require('electron-settings')
+
+            $('#logout').click(() => {
+                ipcRenderer.send('unauthenticated')
+                settings.set('logout', true)
+            })
+
+            //let setiing = settings.get('username')
+            $('.username').text(settings.get('username'))
+        })
+
         require('./assets/js/navbar');
         $('.js-content').load('src/dashboard.html');
     </script>
@@ -294,24 +320,50 @@
 
     <!-- Plugins js-->
     <script src="./assets/libs/flatpickr/flatpickr.min.js"></script>
-    <script src="assets/libs/jquery-knob/jquery.knob.min.js"></script>
-    <script src="assets/libs/jquery-sparkline/jquery.sparkline.min.js"></script>
-    <script src="assets/libs/flot-charts/jquery.flot.js"></script>
-    <script src="assets/libs/flot-charts/jquery.flot.time.js"></script>
-    <script src="assets/libs/flot-charts/jquery.flot.tooltip.min.js"></script>
-    <script src="assets/libs/flot-charts/jquery.flot.selection.js"></script>
-    <script src="assets/libs/flot-charts/jquery.flot.crosshair.js"></script>
+    <script src="./assets/libs/jquery-knob/jquery.knob.min.js"></script>
+    <script src="./assets/libs/jquery-sparkline/jquery.sparkline.min.js"></script>
+    <script src="./assets/libs/flot-charts/jquery.flot.js"></script>
+    <script src="./assets/libs/flot-charts/jquery.flot.time.js"></script>
+    <script src="./assets/libs/flot-charts/jquery.flot.tooltip.min.js"></script>
+    <script src="./assets/libs/flot-charts/jquery.flot.selection.js"></script>
+    <script src="./assets/libs/flot-charts/jquery.flot.crosshair.js"></script>
     <!-- Tost-->
     <script src="assets/libs/jquery-toast/jquery.toast.min.js"></script>
 
+    <!-- Footable js -->
+    <script src="assets/libs/footable/footable.all.min.js"></script>
+
+    <!-- Init js -->
+    <script src="assets/js/pages/foo-tables.init.js"></script>
     <!-- toastr init js-->
     <script src="assets/js/pages/toastr.init.js"></script>
 
     <!-- Dashboar 1 init js-->
     <script src="assets/js/pages/dashboard-1.init.js"></script>
 
+
+    <!-- Datatables init -->
+    <script src="assets/js/pages/datatables.init.js"></script>
+
     <!-- App js-->
     <script src="assets/js/app.min.js"></script>
+
+
+    <!-- third party js -->
+    <!-- <script src="assets/libs/datatables/jquery.dataTables.min.js"></script>
+    <!-- <script src="assets/libs/datatables/dataTables.bootstrap4.js"></script>
+    <script src="assets/libs/datatables/dataTables.responsive.min.js"></script>
+    <script src="assets/libs/datatables/responsive.bootstrap4.min.js"></script>
+    <script src="assets/libs/datatables/dataTables.buttons.min.js"></script>
+    <script src="assets/libs/datatables/buttons.bootstrap4.min.js"></script>
+    <script src="assets/libs/datatables/buttons.html5.min.js"></script>
+    <script src="assets/libs/datatables/buttons.flash.min.js"></script>
+    <script src="assets/libs/datatables/buttons.print.min.js"></script>
+    <script src="assets/libs/datatables/dataTables.keyTable.min.js"></script>
+    <script src="assets/libs/datatables/dataTables.select.min.js"></script>
+    <script src="assets/libs/pdfmake/pdfmake.min.js"></script> -->
+    <script src="assets/libs/pdfmake/vfs_fonts.js"></script> -->
+    <!-- third party js ends -->
 
 </body>
 

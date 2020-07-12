@@ -1,6 +1,8 @@
 const path = require('path')
 const glob = require('glob')
 const { app, BrowserWindow, Menu, ipcMain } = require('electron')
+const settings = require('electron-settings')
+
 
 let mainWindow = null
 let loginWindow = null
@@ -20,6 +22,7 @@ function initialize() {
             show: false,
             title: app.getName(),
             webPreferences: {
+                DevTools: true,
                 nodeIntegration: true
             }
         }
@@ -27,51 +30,122 @@ function initialize() {
         // create main window
         mainWindow = new BrowserWindow(windowOptions)
 
-        // and load the index.html of the app.cle
+        // and load the index.html of the app
         mainWindow.loadFile('index.html')
 
         // Open the DevTools. 
-        mainWindow.webContents.openDevTools()
+        //mainWindow.webContents.openDevTools()
+
+        // set Menu
+        initMenu()
 
         mainWindow.on('closed', () => {
+            settings.set('logout', false)
             mainWindow = null
         })
 
         // create login window
-        loginWindow = new BrowserWindow({ width: 400, height: 500, alwaysOnTop: true, autoHideMenuBar: true, maximizable: false, show: false, webPreferences: { nodeIntegration: true } })
-        splash = new BrowserWindow({ width: 600, height: 400, transparent: true, frame: false, alwaysOnTop: true });
-        loginWindow.loadFile('src/auth/login.html')
+        createLoginWindow()
+
+        // create splash window
+        splash = new BrowserWindow({
+            width: 600,
+            height: 400,
+            transparent: true,
+            frame: false,
+            alwaysOnTop: true
+        });
+
         splash.loadFile('src/splashScreen.html')
-            // show splash
-        splash.show()
+        splash.show() // show splash
 
         setTimeout(() => {
             splash.destroy()
+            createLoginWindow
             loginWindow.show()
-            loginWindow.webContents.openDevTools()
+                //loginWindow.webContents.openDevTools()
         }, 1000);
 
         loginWindow.on('closed', () => {
-            //loginWindow = null
-            app.quit()
+            settings.set('logout', false)
+            loginWindow = null
         })
 
         ipcMain.on("unauthenticated", (event) => {
-            loginWindow.show()
+            console.log('logged out')
+
+            mainWindow.hide()
+
+            createLoginWindow()
+            loginWindow.once('ready-to-show', () => {
+                loginWindow.show()
+            })
         })
 
         ipcMain.on("authenticated", (event) => {
+            console.log('logged in')
+            mainWindow.show()
+
+            // check if logged out
+            if (settings.get('logout')) {
+                mainWindow.show()
+                loginWindow.close()
+            }
+
             // show main window when ready
             mainWindow.once('ready-to-show', () => {
                 mainWindow.show()
-                loginWindow.hide();
+                loginWindow.close()
+            })
+        })
+
+        function createLoginWindow() {
+            loginWindow = new BrowserWindow({
+                width: 400,
+                height: 600,
+                alwaysOnTop: true,
+                maximizable: false,
+                resizable: false,
+                autoHideMenuBar: true,
+                show: false,
+                webPreferences: {
+                    devTools: false,
+                    nodeIntegration: true
+                }
             })
 
-        })
+            loginWindow.loadFile('src/auth/login.html')
+        }
+
+        function initMenu() {
+            const menu = Menu.buildFromTemplate([{
+                label: 'File',
+                submenu: [
+                    { label: 'Application Info' },
+                    {
+                        label: 'settings',
+                        accelerator: 'CmdOrCtrl+,'
+                    },
+                    {
+                        label: 'Quit',
+                        accelerator: 'CmdOrCtrl+Q',
+                        click: () => {
+                            app.quit()
+                        }
+
+                    }
+                ]
+            }])
+
+            Menu.setApplicationMenu(menu)
+        }
     }
 
 
-    // This method will be called when Electron has finished
+    // This method will be called when Electron ha$(document).ready(() => {
+    //     let setiing = settings.get('username')
+    //     $('.username').text(setting)
+    // })s finished
     // initialization and is ready to create browser windows.
     // Some APIs can only be used after this event occurs.
     app.whenReady().then(
